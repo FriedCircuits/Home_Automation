@@ -1,4 +1,4 @@
-Home Automation Sketches
+Home Automation Stuff
 ================
 
 For more details check out
