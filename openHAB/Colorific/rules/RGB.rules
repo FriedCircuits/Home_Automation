@@ -1,0 +1,19 @@
+import org.openhab.core.library.types.*
+
+rule "Set Colorific Bulb Color"
+when
+        Item colorific changed
+then
+        val hsbValue = colorific.state as HSBType
+        val brightness = hsbValue.brightness.intValue
+        val redValue   = ((((hsbValue.red.intValue * 255) / 100) * brightness) / 100).toString
+        val greenValue = ((((hsbValue.green.intValue * 255) / 100) * brightness) / 100).toString
+        val blueValue  = ((((hsbValue.blue.intValue *255) / 100) * brightness) / 100).toString
+        logWarn("Red", redValue)
+        logWarn("Green", greenValue)
+        logWarn("Blue", blueValue)
+
+        var String cmd = 'sudo /usr/bin/python /usr/share/openhab/configuration/colorific.py B4:99:4C:64:80:3E ' + redValue + ' ' + greenValue + ' ' + blue + blueValue
+
+        executeCommandLine(cmd)
+end

@@ -1,0 +1,3 @@
+ Frame label="Livingroom" icon="sofa" {
+                Colorpicker item=colorific label="Colorific" icon="slider"
+}

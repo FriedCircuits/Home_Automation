@@ -1,0 +1,4 @@
+//Example of item entry for Colorific RGB Bulb
+
+//Colorific RGB Bulb
+Color colorific "Color" (colorize) {exec=">[OFF:sudo /usr/bin/python /usr/share/openhab/configuration/colorific.py B4:99:4C:64:80:3E 0 0 0] >[ON:sudo /usr/bin/python /usr/share/configuration/colorific.py B4:99:4C:64:80:3E 255 255 255]"}
