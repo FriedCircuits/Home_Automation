@@ -14,11 +14,15 @@ DEVICENAME[0]="DeviceName1"
 DEVICEIP[0]="192.168.X.X"
 DEVICEMAC[0]="XX:XX:XX:XX:XX:XX"
 DEVICEITEM[0]="device_Name1"
+DEVICESTATE[0]=false
+DEVICELASTCHANGE[0]=0
 
 DEVICENAME[1]="DeviceName2"
 DEVICEIP[1]="192.168.X.X"
 DEVICEMAC[1]="XX:XX:XX:XX:XX:XX"
 DEVICEITEM[1]="device_Name2"
+DEVICESTATE[1]=false
+DEVICELASTCHANGE[1]=0
 
 occupiedItem="occupiedState"
 occupiedFlag=false
@@ -35,26 +39,36 @@ do
 	#echo ${DEVICENAME[$i]}
   	DEVICES=`hcitool name ${DEVICEMAC[$i]}`
 
-	  if [[ $DEVICES = *${DEVICENAME[$i]}* ]]
+	  if [[ $DEVICES = *${DEVICENAME[$i]}* && not ${DEVICESTATE[$i]} ]]
 	  then
 	    #echo "if true"
 	    curl --max-time 2 --connect-timeout 2 --header "Content-Type: text/plain" --request PUT --data "ON" http://$openHABIP/rest/items/${DEVICEITEM[$i]}/state
 	    occupiedFlag=true
-	  else
+	    DEVICESTATE[$i]=true
+	    DEVICELASTCHANGE[$i]=$(date  +"%T")
+	    update=true
+	  else if [[ $DEVICES != *${DEVICENAME[$i]}* && ${DEVICESTATE[$i]} ]]
 	    #echo "if else"
 	    curl --max-time 2 --connect-timeout 2 --header "Content-Type: text/plain" --request PUT --data "OFF" http://$openHABIP/rest/items/${DEVICEITEM[$i]}/state
+	    DEVICESTATE[$i]=false
+	    DEVICELASTCHANGE[$i]=$(date  +"%T")
+	    update=true
 	  fi
   done
 
-  if [[ $occupiedFlag == true ]]
+  if [[ $update == true ]]
   then
-    #echo "true"
-    curl --max-time 2 --connect-timeout 2 --header "Content-Type: text/plain" --request PUT --data "ON" http://$openHABIP/rest/items/$occupiedItem/state
-  else
-    #echo "false"
-    curl --max-time 2 --connect-timeout 2 --header "Content-Type: text/plain" --request PUT --data "OFF" http://$openHABIP/rest/items/$occupiedItem/state
+  	if [[ $occupiedFlag == true ]]
+  	then
+    	    #echo "true"
+    	    curl --max-time 2 --connect-timeout 2 --header "Content-Type: text/plain" --request PUT --data "ON" http://$openHABIP/rest/items/$occupiedItem/state
+  	else
+    	    #echo "false"
+    	    curl --max-time 2 --connect-timeout 2 --header "Content-Type: text/plain" --request PUT --data "OFF" http://$openHABIP/rest/items/$occupiedItem/state
+  	fi
+  	update=false
   fi
-
+  
   occupiedFlag=false
   sleep 30
 done
