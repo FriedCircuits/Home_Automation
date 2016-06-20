@@ -43,7 +43,7 @@ while 1 :
 		if debug == True:
 			sys.stdout.write(msg)
         	data = msg.split(" ")
-        	if data[2].isdigit != True:
+        	if data[2].isdigit == True:
 			a = int(data[2]) 
 		      	b = int(data[3])
         		c = int(data[4])
